@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <opencv/cv.h>        //you may need to
 #include <opencv/highgui.h>   //adjust import locations
@@ -12,7 +11,7 @@ void sobel(
 	int size,
 	cv::Mat &output1,cv::Mat &output2,cv::Mat &output3,cv::Mat &output4);
 
-void sobel(cv::Mat &input, int size, cv::Mat &output1,cv::Mat &output2,cv::Mat &output3,cv::Mat &output4)
+void sobel(cv::Mat &input, cv::Mat &output1,cv::Mat &output2,cv::Mat &output3,cv::Mat &output4)
 {
   output1.create(input.size(), input.type());
   output2.create(input.size(), input.type());
@@ -37,15 +36,15 @@ void sobel(cv::Mat &input, int size, cv::Mat &output1,cv::Mat &output2,cv::Mat &
   Mat kernelx(3,3, CV_8UC1, Scalar(0));
   Mat kernely(3,3, CV_8UC1, Scalar(0));
 
-  kernelx.at<uchar>(0,0) = -1;
-  kernelx.at<uchar>(0,1) = 0;
-  kernelx.at<uchar>(0,2) = 1;
-  kernelx.at<uchar>(1,0) = 2;
-  kernelx.at<uchar>(1,1) = 0;
-  kernelx.at<uchar>(1,2) = 2;
-  kernelx.at<uchar>(2,0) = -1;
-  kernelx.at<uchar>(2,1) = 0;
-  kernelx.at<uchar>(2,2) = -1;
+  kernelx.at<int>(0,0) = -1;
+  kernelx.at<int>(0,1) = 0;
+  kernelx.at<int>(0,2) = 1;
+  kernelx.at<int>(1,0) = 2;
+  kernelx.at<int>(1,1) = 0;
+  kernelx.at<int>(1,2) = 2;
+  kernelx.at<int>(2,0) = -1;
+  kernelx.at<int>(2,1) = 0;
+  kernelx.at<int>(2,2) = -1;
 
   kernely = kernelx.t();
 
@@ -79,12 +78,16 @@ void sobel(cv::Mat &input, int size, cv::Mat &output1,cv::Mat &output2,cv::Mat &
         }
       }
       // set the output value as the sum of the convolution
-      output1.at<uchar>(i, j) = (uchar) dx;
-      output2.at<uchar>(i, j) = (uchar) dy;
-      output3.at<uchar>(i, j) = (uchar) sqrt((dx*dx)+(dy*dy));
-      output4.at<uchar>(i, j) = (uchar) atan2(dy,dx);
+      output1.at<uchar>(i, j) = (float) dx;
+      output2.at<uchar>(i, j) = (float) dy;
+      output3.at<uchar>(i, j) = (float) sqrt((dx*dx)+(dy*dy));
+      output4.at<uchar>(i, j) = (float) atan2(dy,dx);
     }
   }
+	cv::normalize(output1,output1,0,255,NORM_MINMAX);
+	cv::normalize(output2,output2,0,255,NORM_MINMAX);
+	cv::normalize(output3,output3,0,255,NORM_MINMAX);
+	cv::normalize(output4,output4,0,255,NORM_MINMAX);
 }
 
 int main( int argc, char** argv )
@@ -93,10 +96,10 @@ int main( int argc, char** argv )
  // LOADING THE IMAGE
  char* imageName = argv[1];
  Mat image = imread( imageName, 1 );
- Mat image5(image.rows,image.cols, CV_8UC1, Scalar(0));
- Mat image2(image.rows,image.cols, CV_8UC1, Scalar(0));
- Mat image3(image.rows,image.cols, CV_8UC1, Scalar(0));
- Mat image4(image.rows,image.cols, CV_8UC1, Scalar(0));
+ Mat image5(image.rows,image.cols, CV_32FC1, Scalar(0));
+ Mat image2(image.rows,image.cols, CV_32FC1, Scalar(0));
+ Mat image3(image.rows,image.cols, CV_32FC1, Scalar(0));
+ Mat image4(image.rows,image.cols, CV_32FC1, Scalar(0));
 
 
  if( argc != 2 || !image.data )
@@ -110,7 +113,7 @@ int main( int argc, char** argv )
  Mat gray_image;
  cvtColor( image, gray_image, CV_BGR2GRAY );
 
- sobel(gray_image,gray_image.rows,image2,image3,image4,image5);
+ sobel(gray_image,image2,image3,image4,image5);
  imwrite("dx.jpg", image2);
  imwrite("dy.jpg", image3);
  imwrite("magnitude.jpg", image4);
