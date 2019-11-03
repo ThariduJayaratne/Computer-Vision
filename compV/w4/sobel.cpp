@@ -8,86 +8,39 @@ using namespace cv;
 
 void sobel(
 	cv::Mat &input,
-	int size,
 	cv::Mat &output1,cv::Mat &output2,cv::Mat &output3,cv::Mat &output4);
 
 void sobel(cv::Mat &input, cv::Mat &output1,cv::Mat &output2,cv::Mat &output3,cv::Mat &output4)
 {
-  output1.create(input.size(), input.type());
-  output2.create(input.size(), input.type());
-  output3.create(input.size(), input.type());
-  output4.create(input.size(), input.type());
+  Mat kernelx = (Mat_<int>(3,3) << -1,0,1,-2,0,2,-1,0,1);
+	Mat kernely = kernelx.t();
 
+	for(int y=1;y<input.rows-1;y++){
+    for(int x =1;x<input.cols-1;x++){
+   		float pixelx = 0;
+			float pixely = 0;
+      for(int i=-1;i<2;i++){
+          for(int j=-1;j<2;j++){
+              pixelx +=  input.at<uchar>(y-i,x-j) * kernelx.at<int>(i+1,j+1);
+							pixely +=  input.at<uchar>(y-i,x-j) * kernely.at<int>(i+1,j+1);
+          }
 
-  cv::Mat paddedInput;
-	cv::copyMakeBorder( input, paddedInput,
-	1, 1, 1, 1,
-	cv::BORDER_REPLICATE );
-  // int xdir[3][3] = {
-  //   -1,0,1,
-  //   2,0,2,
-  //   -1,0,1
-  // };
-  // int ydir[3][3] = {
-  //   -1,2,-1,
-  //   0,0,0,
-  //   1,2,1
-  // };
-  Mat kernelx(3,3, CV_8UC1, Scalar(0));
-  Mat kernely(3,3, CV_8UC1, Scalar(0));
-
-  kernelx.at<int>(0,0) = -1;
-  kernelx.at<int>(0,1) = 0;
-  kernelx.at<int>(0,2) = 1;
-  kernelx.at<int>(1,0) = 2;
-  kernelx.at<int>(1,1) = 0;
-  kernelx.at<int>(1,2) = 2;
-  kernelx.at<int>(2,0) = -1;
-  kernelx.at<int>(2,1) = 0;
-  kernelx.at<int>(2,2) = -1;
-
-  kernely = kernelx.t();
-
-  int dx = 0;
-  int dy = 0;
-
-  for ( int i = 0; i < input.rows; i++ )
-  {
-    for( int j = 0; j < input.cols; j++ )
-    {
-      double sum = 0.0;
-      for( int m = -1; m <= 1; m++ )
-      {
-        for( int n = -1; n <= 1; n++ )
-        {
-          // find the correct indices we are using
-          int imagex = i + m + 1;
-          int imagey = j + n + 1;
-          int xd = m + 1;
-          int yd = n + 1;
-
-          // get the values from the padded image and the kernel
-          int imageval = ( int ) paddedInput.at<uchar>( imagex, imagey );
-          double x = kernelx.at<double>( xd, yd );
-          double y = kernely.at<double>( xd, yd );
-
-          // do the multiplication
-           dx += imageval * x;
-           dy += imageval * y;
-
-        }
       }
-      // set the output value as the sum of the convolution
-      output1.at<uchar>(i, j) = (float) dx;
-      output2.at<uchar>(i, j) = (float) dy;
-      output3.at<uchar>(i, j) = (float) sqrt((dx*dx)+(dy*dy));
-      output4.at<uchar>(i, j) = (float) atan2(dy,dx);
-    }
-  }
-	cv::normalize(output1,output1,0,255,NORM_MINMAX);
-	cv::normalize(output2,output2,0,255,NORM_MINMAX);
-	cv::normalize(output3,output3,0,255,NORM_MINMAX);
-	cv::normalize(output4,output4,0,255,NORM_MINMAX);
+			output1.at<float>(y, x) = pixelx;
+			output2.at<float>(y, x) = pixely;
+			output3.at<float>(y, x) = sqrt((pixelx*pixelx)+(pixely*pixely));
+			output4.at<float>(y, x) = atan2(pixely,pixelx);
+
+			}
+		}
+		cv::normalize(output1,output1,0,255,NORM_MINMAX);
+		cv::normalize(output2,output2,0,255,NORM_MINMAX);
+		cv::normalize(output3,output3,0,255,NORM_MINMAX);
+		cv::normalize(output4,output4,0,255,NORM_MINMAX);
+		imwrite("dx.jpg", output1);
+		imwrite("dy.jpg", output2);
+		imwrite("magnitude.jpg", output3);
+		imwrite("arctan.jpg", output4);
 }
 
 int main( int argc, char** argv )
@@ -96,11 +49,10 @@ int main( int argc, char** argv )
  // LOADING THE IMAGE
  char* imageName = argv[1];
  Mat image = imread( imageName, 1 );
- Mat image5(image.rows,image.cols, CV_32FC1, Scalar(0));
  Mat image2(image.rows,image.cols, CV_32FC1, Scalar(0));
  Mat image3(image.rows,image.cols, CV_32FC1, Scalar(0));
  Mat image4(image.rows,image.cols, CV_32FC1, Scalar(0));
-
+ Mat image5(image.rows,image.cols, CV_32FC1, Scalar(0));
 
  if( argc != 2 || !image.data )
  {
@@ -108,16 +60,11 @@ int main( int argc, char** argv )
    return -1;
  }
 
- // CONVERT COLOUR, BLUR AND SAVE
- // CONVERT COLOUR, BLUR AND SAVE
  Mat gray_image;
  cvtColor( image, gray_image, CV_BGR2GRAY );
 
  sobel(gray_image,image2,image3,image4,image5);
- imwrite("dx.jpg", image2);
- imwrite("dy.jpg", image3);
- imwrite("magnitude.jpg", image4);
- imwrite("arctan.jpg", image5);
+
 
  return 0;
 }
