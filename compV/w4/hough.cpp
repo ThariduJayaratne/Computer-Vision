@@ -49,8 +49,19 @@ Mat threshold(int val){
  return result;
 }
 
-Mat thresholded = threshold(100);
-Mat mag,dir = sobel();
+void hough(Mat threholded){
+  thresholded = threshold(100);
+  Mat mag,dir = sobel();
+  int xo, yo = 0;
+  for(int x=0;x<thresholded.rows,x++){
+    for(int y =0;y<thresholded.cols,y++){
+      if(thresholded.at<uchar>(i,j)==255){
+        //xo = x + r cos(direction val)
+      }
+    }
+  }
+}
+
 
 
 int main(int argc, char** argv) {
