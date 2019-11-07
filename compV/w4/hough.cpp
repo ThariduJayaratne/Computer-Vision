@@ -5,12 +5,11 @@
 
 using namespace cv;
 
-void sobel(
- cv::Mat &input,
- cv::Mat &output1);
-
-void sobel(cv::Mat &input, cv::Mat &output1)
+Mat sobel()
 {
+  Mat input = imread("coin1.png",0);
+  Mat output1(input.rows,input.cols, CV_32FC1, Scalar(0));
+  Mat output2(input.rows,input.cols, CV_32FC1, Scalar(0));
   Mat kernelx = (Mat_<int>(3,3) << -1,0,1,-2,0,2,-1,0,1);
   Mat kernely = kernelx.t();
 
@@ -26,22 +25,20 @@ void sobel(cv::Mat &input, cv::Mat &output1)
 
       }
      output1.at<float>(y, x) = sqrt((pixelx*pixelx)+(pixely*pixely));
+     output2.at<float>(y, x) = atan2(pixely,pixelx);
      }
    }
    cv::normalize(output1,output1,0,255,NORM_MINMAX);
-
-   imwrite("thresholded.jpg", output1);
+   return output1, output2;
 }
 
-int main(int argc, char** argv) {
-  char* imageName = argv[1];
-  Mat image = imread( imageName, 1 );
-  Mat result(image.rows, image.cols, CV_32FC1,Scalar(0));
-  Mat output(image.rows,image.cols, CV_32FC1, Scalar(0));
 
+Mat threshold(int val){
+  Mat image = imread("magnitude.jpg",0);
+  Mat result(image.rows, image.cols, CV_8UC1,Scalar(0));
   for(int x=0; x<image.rows; x++) {
    for(int y=0; y<image.cols; y++) {
-     if (image.at<uchar>(x,y)>100) {
+     if (image.at<uchar>(x,y)>val) {
        result.at<uchar>(x,y)=255;
      }
      else {
@@ -49,6 +46,18 @@ int main(int argc, char** argv) {
      }
    }
  }
-  sobel(result,output);
+ return result;
+}
+
+Mat thresholded = threshold(100);
+Mat mag,dir = sobel();
+
+
+int main(int argc, char** argv) {
+  // char* imageName = argv[1];
+  // Mat image = imread(imageName,1);
+  imwrite("thresholded.jpg",threshold(110));
+
+
   return 0;
 }
