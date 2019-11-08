@@ -48,16 +48,37 @@ Mat threshold(int val){
  }
  return result;
 }
+int ***malloc3dArray(int dim1, int dim2, int dim3)
+{
+    int i, j, k;
+    int ***array = (int ***) malloc(dim1 * sizeof(int **));
 
-void hough(Mat threholded){
-  thresholded = threshold(100);
+    for (i = 0; i < dim1; i++) {
+        array[i] = (int **) malloc(dim2 * sizeof(int *));
+	for (j = 0; j < dim2; j++) {
+  	    array[i][j] = (int *) malloc(dim3 * sizeof(int));
+	}
+
+    }
+    return array;
+}
+
+void hough(){
+  Mat thresholded = threshold(65);
   Mat mag,dir = sobel();
-  int xo, yo = 0;
-  for(int x=0;x<thresholded.rows,x++){
-    for(int y =0;y<thresholded.cols,y++){
-      if(thresholded.at<uchar>(i,j)==255){
-        //xo = x + r cos(direction val)
+  int ***accumulator = malloc3dArray(thresholded.rows,thresholded.cols,100);
+  for(int y=0;y<thresholded.rows;y++){
+    for(int x =0;x<thresholded.cols;x++){
+      for(int r =20;r<=100;r++){
+        if(thresholded.at<uchar>(i,j)==255){
+            int xo = x + r*std::cos(dir.at<float>(y,x));
+            int yo = y + r*std::sin(dir.at<float>(y,x));
+          if(xo>=0 &&yo>=0 && xo<=thresholded.cols && yo<=thresholded.rows){
+            accumulator[xo][yo][r] += 1;
+          }
+        }
       }
+
     }
   }
 }
@@ -67,7 +88,7 @@ void hough(Mat threholded){
 int main(int argc, char** argv) {
   // char* imageName = argv[1];
   // Mat image = imread(imageName,1);
-  imwrite("thresholded.jpg",threshold(110));
+  imwrite("thresholded.jpg",threshold(65));
 
 
   return 0;
