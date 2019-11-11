@@ -70,17 +70,31 @@ void hough(){
   for(int y=0;y<thresholded.rows;y++){
     for(int x =0;x<thresholded.cols;x++){
       for(int r =20;r<=100;r++){
-        if(thresholded.at<uchar>(i,j)==255){
+        if(thresholded.at<uchar>(y,x)==255){
             int xo = x + r*std::cos(dir.at<float>(y,x));
             int yo = y + r*std::sin(dir.at<float>(y,x));
           if(xo>=0 &&yo>=0 && xo<=thresholded.cols && yo<=thresholded.rows){
             accumulator[xo][yo][r] += 1;
           }
+          int xon = x - r*std::cos(dir.at<float>(y,x));
+          int yon = y - r*std::sin(dir.at<float>(y,x));
+        if(xon>=0 &&yon>=0 && xon<=thresholded.cols && yon<=thresholded.rows){
+          accumulator[xon][yon][r] += 1;
         }
       }
+    }
 
+  }
+}
+  Mat convToMat(thresholded.rows,thresholded.cols, CV_32FC1, Scalar(0));
+  for(int i=0;i<convToMat.rows;i++){
+    for(int j=0;j<convToMat.cols;j++){
+      for(int r=20;r<=100;r++){
+        convToMat.at<float>(i,j) = accumulator[i][j][r];
+      }
     }
   }
+  imwrite("houghspace.jpg",convToMat);
 }
 
 
@@ -88,8 +102,7 @@ void hough(){
 int main(int argc, char** argv) {
   // char* imageName = argv[1];
   // Mat image = imread(imageName,1);
-  imwrite("thresholded.jpg",threshold(65));
-
-
+  // imwrite("thresholded.jpg",threshold(65));
+  hough();
   return 0;
 }
