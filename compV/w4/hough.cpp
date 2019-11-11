@@ -29,11 +29,11 @@ Mat sobel()
      }
    }
    cv::normalize(output1,output1,0,255,NORM_MINMAX);
-   return output1, output2;
+   return output2;
 }
 
 
-Mat threshold(int val){
+Mat _threshold(int val){
   Mat image = imread("magnitude.jpg",0);
   Mat result(image.rows, image.cols, CV_8UC1,Scalar(0));
   for(int x=0; x<image.rows; x++) {
@@ -64,40 +64,44 @@ int ***malloc3dArray(int dim1, int dim2, int dim3)
 }
 
 void hough(){
-  Mat thresholded = threshold(65);
-  Mat mag,dir = sobel();
+  Mat thresholded = _threshold(65);
+  Mat dir = sobel();
   int ***accumulator = malloc3dArray(thresholded.rows,thresholded.cols,100);
+  for(int i = 0;i<thresholded.rows;i++){
+    for(int j = 0;j<thresholded.cols;j++){
+      for(int r = 0;r<100;r++){
+      accumulator[i][j][r] = 0;
+     }
+    }
+  }
   for(int y=0;y<thresholded.rows;y++){
     for(int x =0;x<thresholded.cols;x++){
-      for(int r =20;r<=100;r++){
+      for(int r =20;r<100;r++){
         if(thresholded.at<uchar>(y,x)==255){
-            int xo = x + r*std::cos(dir.at<float>(y,x));
             int yo = y + r*std::sin(dir.at<float>(y,x));
-          if(xo>=0 &&yo>=0 && xo<=thresholded.cols && yo<=thresholded.rows){
-            accumulator[xo][yo][r] += 1;
+            int xo = x + r*std::cos(dir.at<float>(y,x));
+          if(xo>=0 &&yo>=0 && yo<thresholded.rows && xo<thresholded.cols){
+            accumulator[yo][xo][r] += 1;
           }
           int xon = x - r*std::cos(dir.at<float>(y,x));
           int yon = y - r*std::sin(dir.at<float>(y,x));
-        if(xon>=0 &&yon>=0 && xon<=thresholded.cols && yon<=thresholded.rows){
-          accumulator[xon][yon][r] += 1;
+        if(xon>=0 &&yon>=0 && xon<thresholded.cols && yon<thresholded.rows){
+          accumulator[yon][xon][r] += 1;
         }
       }
     }
-
   }
 }
   Mat convToMat(thresholded.rows,thresholded.cols, CV_32FC1, Scalar(0));
-  for(int i=0;i<convToMat.rows;i++){
-    for(int j=0;j<convToMat.cols;j++){
-      for(int r=20;r<=100;r++){
+  for(int i=0;i<thresholded.rows;i++){
+    for(int j=0;j<thresholded.cols;j++){
+      for(int r=0;r<100;r++){
         convToMat.at<float>(i,j) = accumulator[i][j][r];
       }
     }
   }
   imwrite("houghspace.jpg",convToMat);
 }
-
-
 
 int main(int argc, char** argv) {
   // char* imageName = argv[1];
