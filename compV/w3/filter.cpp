@@ -7,7 +7,7 @@
 using namespace cv;
 
 void GaussianBlur(
-	cv::Mat &input, 
+	cv::Mat &input,
 	int size,
 	cv::Mat &blurredOutput);
 
@@ -32,15 +32,15 @@ int main( int argc, char** argv )
 
  Mat carBlurred;
  GaussianBlur(gray_image,5,carBlurred);
- 
+
  Mat sharpen;
  for(int i=0;i<5;i++){
 sharpen = 2 * gray_image - carBlurred;
-
+carBlurred
  }
- imwrite( carBlurred
+ imwrite("blurred.jpg", carBlurred );
 
- return 0;carBlurred
+ return 0;
 }
 
 void GaussianBlur(cv::Mat &input, int size, cv::Mat &blurredOutput)
@@ -48,10 +48,10 @@ void GaussianBlur(cv::Mat &input, int size, cv::Mat &blurredOutput)
 	// intialise the output using the input
 	blurredOutput.create(input.size(), input.type());
 
-	// create the Gaussian kernel in 1D 
+	// create the Gaussian kernel in 1D
 	cv::Mat kX = cv::getGaussianKernel(size, -1);
 	cv::Mat kY = cv::getGaussianKernel(size, -1);
-	
+
 	// make it 2D multiply one by the transpose of the other
 	cv::Mat kernel = kX * kY.t();
 
@@ -71,13 +71,13 @@ void GaussianBlur(cv::Mat &input, int size, cv::Mat &blurredOutput)
        }
 
 	cv::Mat paddedInput;
-	cv::copyMakeBorder( input, paddedInput, 
+	cv::copyMakeBorder( input, paddedInput,
 		kernelRadiusX, kernelRadiusX, kernelRadiusY, kernelRadiusY,
 		cv::BORDER_REPLICATE );
 
 	// now we can do the convoltion
 	for ( int i = 0; i < input.rows; i++ )
-	{	
+	{
 		for( int j = 0; j < input.cols; j++ )
 		{
 			double sum = 0.0;
@@ -96,7 +96,7 @@ void GaussianBlur(cv::Mat &input, int size, cv::Mat &blurredOutput)
 					double kernalval = kernel.at<double>( kernelx, kernely );
 
 					// do the multiplication
-					sum += imageval * kernalval;							
+					sum += imageval * kernalval;
 				}
 			}
 			// set the output value as the sum of the convolution
