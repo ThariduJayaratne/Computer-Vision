@@ -1,0 +1,9 @@
+IMG 0
+11
+IOU is 0.801324
+True positives: 1.000000
+False positives: 10.000000
+Tpr: 0.090909
+F1 score is: 0.090909
+
+IMG 1
