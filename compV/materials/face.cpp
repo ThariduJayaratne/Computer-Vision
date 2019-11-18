@@ -88,11 +88,11 @@ void detectAndDisplay( Mat frame )
 	for( int i = 0; i < img15.size(); i++ )
 	{
 		rectangle(frame, Point(img15[i].x, img15[i].y), Point(img15[i].x + img15[i].width, img15[i].y + img15[i].height), Scalar( 0, 0, 255 ), 2);
-		truePositives += 1;
 	}
 
 	float falsePositives = 0;
 	for (int i = 0; i < faces.size(); i++) {
+		int correct = 0;
 		for (int j = 0; j < img15.size(); j++) {
 			Rect r1(faces[i].x, faces[i].y,faces[i].width,faces[i].height);
 			Rect r2(img15[j].x, img15[j].y,img15[j].width,img15[j].height);
@@ -104,12 +104,13 @@ void detectAndDisplay( Mat frame )
 			float uHeight = unionA.height;
 			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
 			if (areaRatio > 0.2f) {
-				 printf("IOU is %f\n", i, j, areaRatio);
-				 // printf("intersection is %d union is %d\n",intersection.area(),unionA.area());
+				correct = 1;
+				truePositives += 1;
+				printf("IOU is %f\n", i, j, areaRatio);
 			 }
-			 else if(areaRatio > 0 && areaRatio < 0.2){
-				 falsePositives++;
-			 }
+		}
+		if (correct == 0) {
+			falsePositives++;
 		}
 	}
 	float tpr = truePositives/faces.size();

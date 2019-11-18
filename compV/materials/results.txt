@@ -1,12 +1,12 @@
-IMAGE 4
+IMG 4
 1
 IOU is 0.798742
 True positives: 1.000000
 False positives: 0.000000
 Tpr: 1.000000
 F1 score is: 1.000000
--------------------------------------
-IMAGE 5
+
+IMG 5
 14
 IOU is 0.681791
 IOU is 0.714711
@@ -20,38 +20,35 @@ IOU is 0.672852
 IOU is 0.578231
 IOU is 0.692521
 True positives: 11.000000
-False positives: 2.000000
+False positives: 3.000000
 Tpr: 0.785714
-F1 score is: 0.814815
---------------------------------------
-IMAGE 13
+F1 score is: 0.785714
+
+IMG 13
 2
 IOU is 0.764176
 True positives: 1.000000
-False positives: 0.000000
+False positives: 1.000000
 Tpr: 0.500000
-F1 score is: 0.666667
----------------------------------------
-Not sure
-IMAGE 14
+F1 score is: 0.500000
+
+IMG 14
 6
 IOU is 0.738700
 IOU is 0.715878
 True positives: 2.000000
-False positives: 2.000000
+False positives: 4.000000
 Tpr: 0.333333
-F1 score is: 0.400000
-----------------------------------------
-IMAGE 15
+F1 score is: 0.333333
+
+IMG 15
 4
 IOU is 0.362471
 IOU is 0.570662
-True positives: 3.000000
-False positives: 0.000000
-Tpr: 0.750000
-F1 score is: 0.857143
-
-
+True positives: 2.000000
+False positives: 2.000000
+Tpr: 0.500000
+F1 score is: 0.500000
 
 -------------------------------------------
 2A
@@ -96,7 +93,6 @@ Precalculation time: 7
 |   6|        1|    0.046|
 +----+---------+---------+
 END>
-
 ===== TRAINING 2-stage =====
 <BEGIN
 POS count : consumed   500 : 500
