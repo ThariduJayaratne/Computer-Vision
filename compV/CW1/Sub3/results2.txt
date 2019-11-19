@@ -1,0 +1,147 @@
+IMG 0
+11
+IOU is 0.801324
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 10.000000
+False negatives: 0.000000
+F1 score is: 0.166667
+
+IMG 1
+8
+IOU is 0.500268
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 7.000000
+False negatives: 0.000000
+F1 score is: 0.222222
+
+IMG 2
+7
+IOU is 0.286259
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 6.000000
+False negatives: 0.000000
+F1 score is: 0.250000
+
+IMG 3
+6
+IOU is 0.688104
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 5.000000
+False negatives: 0.000000
+F1 score is: 0.285714
+
+IMG 4
+10
+IOU is 0.522600
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 9.000000
+False negatives: 0.000000
+F1 score is: 0.181818
+
+IMG 5
+16
+IOU is 0.699302
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 15.000000
+False negatives: 0.000000
+F1 score is: 0.117647
+
+IMG 6
+9
+IOU is 0.339365
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 8.000000
+False negatives: 0.000000
+F1 score is: 0.200000
+
+IMG 7
+17
+IOU is 0.566483
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 16.000000
+False negatives: 0.000000
+F1 score is: 0.111111
+
+IMG 8
+20
+IOU is 0.649485
+IOU is 0.850575
+Tpr: 1.000000
+True positives: 2.000000
+False positives: 18.000000
+False negatives: 0.000000
+F1 score is: 0.181818
+
+IMG 9
+9
+IOU is 0.636487
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 8.000000
+False negatives: 0.000000
+F1 score is: 0.200000
+
+IMG 10
+60
+IOU is 0.391452
+IOU is 0.294097
+IOU is 0.251838
+Tpr: 1.000000
+True positives: 3.000000
+False positives: 57.000000
+False negatives: 0.000000
+F1 score is: 0.095238
+
+IMG 11
+3
+IOU is 0.258462
+Tpr: 0.333333
+True positives: 1.000000
+False positives: 2.000000
+False negatives: 2.000000
+F1 score is: 0.333333
+
+IMG 12
+4
+IOU is 0.361702
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 3.000000
+False negatives: 0.000000
+F1 score is: 0.400000
+
+IMG 13
+9
+IOU is 0.900431
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 8.000000
+False negatives: 0.000000
+F1 score is: 0.200000
+
+IMG 14
+45
+IOU is 0.377232
+IOU is 0.439961
+Tpr: 1.000000
+True positives: 2.000000
+False positives: 43.000000
+False negatives: 0.000000
+F1 score is: 0.085106
+
+IMG 15
+4
+IOU is 0.829699
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 3.000000
+False negatives: 0.000000
+F1 score is: 0.400000
