@@ -1,11 +1,8 @@
 #include <stdio.h>
-#include "opencv2/objdetect/objdetect.hpp"
-#include "opencv2/opencv.hpp"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include <iostream>
-#include <stdio.h>
+#include <opencv/cv.h>        //you may need to
+#include <opencv/highgui.h>   //adjust import locations
+#include <opencv/cxcore.h>    //depending on your machine setup
+
 using namespace cv;
 
 Mat sobel (Mat input/*, Mat dx, Mat dy, Mat magnitude, Mat direction*/) {
@@ -98,7 +95,7 @@ vector<Rect> hough(Mat threshold, Mat direction, int radius) {
 
   for (int x = 0; x < threshold.rows; x++) {
     for (int y = 0; y < threshold.cols; y++) {
-      if (threshold.at<uchar>(x, y) == 255) {
+    img1  if (threshold.at<uchar>(x, y) == 255) {
         for (int r = 5; r <= radius; r++) {
 
           int xo = x + r * sin(direction.at<float>(x, y));
@@ -123,6 +120,7 @@ vector<Rect> hough(Mat threshold, Mat direction, int radius) {
   }
 
   normalize(output, output, 0, 255, NORM_MINMAX);
+  imwrite("dart0hough.jpg", output);
   std::vector<Rect> img;
   for (int i = 0; i < output.rows; i++) {
     for (int j = 0; j < output.cols; j++) {
@@ -135,16 +133,16 @@ vector<Rect> hough(Mat threshold, Mat direction, int radius) {
             maxRadius = r;
           }
         }
-        circle(output, Point(j, i), maxRadius, Scalar(0, 0, 255), 2);
-        img.push_back(Rect((j-maxRadius) % output.cols, (i-maxRadius) % output.rows, 2*maxRadius % output.cols, 2*maxRadius % output.rows));
+        // rectangle(output, Point(j-maxRadius, i-maxRadius), Point(j + maxRadius, i + maxRadius), Scalar( 0, 255, 0 ), 2);
+        // circle(tempI, Point(j, i), maxRadius, Scalar(0, 255, 0), 2);
+        // float dist = sqrt((maxRadius/2)*(maxRadius/2))*2;
+        img.push_back(Rect(j-maxRadius, i-maxRadius, 2*maxRadius, 2*maxRadius));
       }
     }
   }
-
-  imwrite("dart0hough.jpg", output);
+  // imwrite("dart0T.jpg", tempI);
   return img;
 }
-
 
 void detectAndDisplay( Mat input )
 {
@@ -185,6 +183,7 @@ void detectAndDisplay( Mat input )
   img10.push_back(Rect(588, 137, 55, 77));
   img10.push_back(Rect(919, 150, 31, 65));
 
+
   std::vector<Rect> img11;
   img11.push_back(Rect(179, 108, 51, 73));
   img11.push_back(Rect(214, 255, 15, 19));
@@ -203,57 +202,37 @@ void detectAndDisplay( Mat input )
   std::vector<Rect> img15;
   img15.push_back(Rect(158, 59, 128, 138));
 
-  int width,height;
+  Mat colored = imread("dart0.jpg");
 
-  Mat gray_image;
-  cvtColor( input, gray_image, CV_BGR2GRAY );
 
-  Mat direction = sobel(gray_image);
+  Mat direction = sobel(input);
 
   Mat magnitude = imread("magnitude.jpg", 0);
-  threshold(magnitude, 30);
+  threshold(magnitude, 50);
 
   Mat threshold = imread("threshold.jpg", 0);
 
   std::vector<Rect> imgDetected = hough(threshold, direction, 150);
-  // for(int i;i<imgDetected.size();i++){
-  //   	std::cout << imgDetected[i] << "";
-  //   	std::cout << "\n" << std::endl;
-  // }
-  String cascade_name = "cascade.xml";
-  CascadeClassifier cascade;
-
-  std::vector<Rect> dartboards;
-
-  equalizeHist( gray_image, gray_image );
-
-  // 2. Perform Viola-Jones Object Detection
-  cascade.detectMultiScale( gray_image, dartboards, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500, 500) );
-
-       // 4. Draw box around faces found
-  for( int i = 0; i < dartboards.size(); i++ )
-  {
-    rectangle(input, Point(dartboards[i].x, dartboards[i].y), Point(dartboards[i].x + dartboards[i].width, dartboards[i].y + dartboards[i].height), Scalar( 255, 0, 0 ), 2);
-  }
 
   for( int k = 0; k < imgDetected.size(); k++ )
   {
-    rectangle(input, Point(imgDetected[k].x, imgDetected[k].y), Point(imgDetected[k].x + imgDetected[k].width, imgDetected[k].y + imgDetected[k].height), Scalar( 0, 255, 0 ), 2);
+    rectangle(colored, Point(imgDetected[k].x, imgDetected[k].y), Point(imgDetected[k].x + imgDetected[k].width, imgDetected[k].y + imgDetected[k].height), Scalar( 0, 255, 0 ), 2);
   }
 
-	for( int i = 0; i < img1.size(); i++ )
-	{
-		rectangle(input, Point(img1[i].x, img1[i].y), Point(img1[i].x + img1[i].width, img1[i].y + img1[i].height), Scalar( 0, 0, 255 ), 2);
-	}
   float truePositives = 0;
-  float falsePositives = 0;
-  float falseNegatives = 0;
 
-  for (int i = 0; i < imgDetected.size(); i++) {
+	for( int i = 0; i < img0.size(); i++ )
+	{
+		rectangle(colored, Point(img0[i].x, img0[i].y), Point(img0[i].x + img0[i].width, img0[i].y + img0[i].height), Scalar( 0, 0, 255 ), 2);
+	}
+  float falsePositives = 0;
+	float falseNegatives = 0;
+
+	for (int i = 0; i < imgDetected.size(); i++) {
 		int correct = 0;
-		for (int j = 0; j < img1.size(); j++) {
+		for (int j = 0; j < img0.size(); j++) {
 			Rect r1(imgDetected[i].x, imgDetected[i].y,imgDetected[i].width,imgDetected[i].height);
-			Rect r2(img1[j].x, img1[j].y,img1[j].width,img1[j].height);
+			Rect r2(img0[j].x, img0[j].y,img0[j].width,img0[j].height);
 			Rect intersection = r1 & r2;
 			Rect unionA = r1 | r2;
 			float iWidth = intersection.width;
@@ -261,7 +240,7 @@ void detectAndDisplay( Mat input )
 			float uWidth = unionA.width;
 			float uHeight = unionA.height;
 			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
-			if (areaRatio > 0.2f) {
+			if (areaRatio > 0.5f) {
 				correct = 1;
 				truePositives += 1;
 				printf("IOU is %f\n",areaRatio);
@@ -270,7 +249,7 @@ void detectAndDisplay( Mat input )
 		if (correct == 0) {
 			falsePositives++;
 		}
-		falseNegatives = img1.size()-truePositives;
+		falseNegatives = img0.size()-truePositives;
 	}
 	float recall = truePositives/(truePositives+falseNegatives);
 	float precision = truePositives/(truePositives+falsePositives);
@@ -278,23 +257,15 @@ void detectAndDisplay( Mat input )
 	printf("Tpr: %f\n", recall);
 	printf("True positives: %f\n", truePositives);
 	printf("False positives: %f\n", falsePositives);
-  printf("False negatives: %f\n", falseNegatives);
-	printf("F1 score is: %f\n", f1score);
-	imwrite("dart1Comb.jpg", input);
+	printf("False negatives: %f\n", falseNegatives);
+	printf("F1 score is:img1 %f\n", f1score);
+
+	imwrite("dart0T.jpg", colored);
 }
+,
 
 int main() {
-
-  // Mat input = imread("dart0.jpg", 0);
-  // Mat direction = sobel(input);
-  //
-  // Mat magnitude = imread("magnitude.jpg", 0);
-  // threshold(magnitude, 50);
-  //
-  // Mat threshold = imread("threshold.jpg", 0);
-  // hough(threshold, direction, 150);
-
-  Mat input = imread("dart1.jpg", 1);
+  Mat input = imread("dart0.jpg",0);
   detectAndDisplay(input);
   return 0;
 }

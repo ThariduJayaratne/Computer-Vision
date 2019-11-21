@@ -1,0 +1,115 @@
+img 0,7 error
+
+
+IMG 1
+IOU is 0.845453
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 2
+IOU is 0.627981
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 3
+IOU is 0.786974
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 4
+IOU is 0.325109
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 5
+IOU is 0.326586
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 6
+IOU is 0.270895
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 8
+IOU is 0.582542
+Tpr: 0.500000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 1.000000
+F1 score is: 0.666667
+
+IMG 9
+IOU is 0.948871
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 10
+IOU is 0.746767
+Tpr: 0.333333
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 2.000000
+F1 score is: 0.500000
+
+IMG 11
+IOU is 0.275047
+Tpr: 0.333333
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 2.000000
+F1 score is: 0.500000
+
+IMG 12
+IOU is 0.251064
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 13
+IOU is 0.565958
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 14
+IOU is 0.941466
+IOU is 0.942700
+Tpr: 1.000000
+True positives: 2.000000
+False positives: 8.000000
+False negatives: 0.000000
+F1 score is: 0.333333
+
+IMG 15
+IOU is 0.261775
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
