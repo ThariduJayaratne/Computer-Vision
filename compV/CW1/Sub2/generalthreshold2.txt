@@ -1,20 +1,27 @@
+AVG = 0.55343
+THRESHOLD 0.25
+
 IMG 0
 11
 IOU is 0.801324
+IOU is 0.541931
 Tpr: 1.000000
-True positives: 1.000000
-False positives: 10.000000
+True positives: 2.000000
+False positives: 9.000000
 False negatives: 0.000000
-F1 score is: 0.166667
+F1 score is: 0.307692
 
 IMG 1
 8
 IOU is 0.500268
+IOU is 0.421267
+IOU is 0.491857
+IOU is 0.265700
 Tpr: 1.000000
-True positives: 1.000000
-False positives: 7.000000
+True positives: 4.000000
+False positives: 4.000000
 False negatives: 0.000000
-F1 score is: 0.222222
+F1 score is: 0.666667
 
 IMG 2
 7
@@ -37,20 +44,23 @@ F1 score is: 0.285714
 IMG 4
 10
 IOU is 0.522600
+IOU is 0.354068
 Tpr: 1.000000
-True positives: 1.000000
-False positives: 9.000000
+True positives: 2.000000
+False positives: 8.000000
 False negatives: 0.000000
-F1 score is: 0.181818
+F1 score is: 0.333333
 
 IMG 5
 16
+IOU is 0.479832
 IOU is 0.699302
+IOU is 0.262549
 Tpr: 1.000000
-True positives: 1.000000
-False positives: 15.000000
+True positives: 3.000000
+False positives: 13.000000
 False negatives: 0.000000
-F1 score is: 0.117647
+F1 score is: 0.315789
 
 IMG 6
 9
@@ -63,31 +73,37 @@ F1 score is: 0.200000
 
 IMG 7
 17
+IOU is 0.389493
 IOU is 0.566483
+IOU is 0.309574
+IOU is 0.512665
 Tpr: 1.000000
-True positives: 1.000000
-False positives: 16.000000
+True positives: 4.000000
+False positives: 13.000000
 False negatives: 0.000000
-F1 score is: 0.111111
+F1 score is: 0.380952
 
 IMG 8
 20
 IOU is 0.649485
 IOU is 0.850575
+IOU is 0.310557
+IOU is 0.328790
 Tpr: 1.000000
-True positives: 2.000000
-False positives: 18.000000
+True positives: 4.000000
+False positives: 16.000000
 False negatives: 0.000000
-F1 score is: 0.181818
+F1 score is: 0.333333
 
 IMG 9
 9
 IOU is 0.636487
+IOU is 0.451035
 Tpr: 1.000000
-True positives: 1.000000
-False positives: 8.000000
+True positives: 2.000000
+False positives: 7.000000
 False negatives: 0.000000
-F1 score is: 0.200000
+F1 score is: 0.363636
 
 IMG 10
 60
@@ -139,9 +155,10 @@ F1 score is: 0.085106
 
 IMG 15
 4
+IOU is 0.274014
 IOU is 0.829699
 Tpr: 1.000000
-True positives: 1.000000
-False positives: 3.000000
+True positives: 2.000000
+False positives: 2.000000
 False negatives: 0.000000
-F1 score is: 0.400000
+F1 score is: 0.666667

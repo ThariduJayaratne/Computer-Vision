@@ -85,17 +85,19 @@ void detectAndDisplay( Mat frame )
 	}
 	float truePositives = 0;
 
-	for( int i = 0; i < img5.size(); i++ )
+	for( int i = 0; i < img15.size(); i++ )
 	{
-		rectangle(frame, Point(img5[i].x, img5[i].y), Point(img5[i].x + img5[i].width, img5[i].y + img5[i].height), Scalar( 0, 0, 255 ), 2);
+		rectangle(frame, Point(img15[i].x, img15[i].y), Point(img15[i].x + img15[i].width, img15[i].y + img15[i].height), Scalar( 0, 0, 255 ), 2);
 	}
 
 	float falsePositives = 0;
+	float falseNegatives = 0;
+
 	for (int i = 0; i < faces.size(); i++) {
 		int correct = 0;
-		for (int j = 0; j < img5.size(); j++) {
+		for (int j = 0; j < img15.size(); j++) {
 			Rect r1(faces[i].x, faces[i].y,faces[i].width,faces[i].height);
-			Rect r2(img5[j].x, img5[j].y,img5[j].width,img5[j].height);
+			Rect r2(img15[j].x, img15[j].y,img15[j].width,img15[j].height);
 			Rect intersection = r1 & r2;
 			Rect unionA = r1 | r2;
 			float iWidth = intersection.width;
@@ -103,24 +105,27 @@ void detectAndDisplay( Mat frame )
 			float uWidth = unionA.width;
 			float uHeight = unionA.height;
 			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
-			if (areaRatio > 0.2f) {
+			if (areaRatio >= 0.5f) {
 				correct = 1;
 				truePositives += 1;
-				printf("IOU is %f\n", i, j, areaRatio);
+				printf("IOU is %f\n",areaRatio);
 			 }
 		}
 		if (correct == 0) {
 			falsePositives++;
 		}
+	  falseNegatives = img15.size()-truePositives;
 	}
-	float tpr = truePositives/faces.size();
+	// float tpr = truePositives/faces.size();
+	float recall = truePositives/(truePositives+falseNegatives);
 	float precision = truePositives/(truePositives+falsePositives);
-	float f1score = (2*(tpr*precision))/(tpr+precision);
+	float f1score = 2*((recall*precision)/(recall+precision));
+	printf("Tpr: %f\n", recall);
 	printf("True positives: %f\n", truePositives);
 	printf("False positives: %f\n", falsePositives);
-	printf("Tpr: %f\n", tpr);
+	printf("False negatives: %f\n", falseNegatives);
 	printf("F1 score is: %f\n", f1score);
 
-	imwrite("dart5T.jpg", frame);
+	// imwrite("dart4T.jpg", frame);
 
 }

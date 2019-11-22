@@ -8,6 +8,11 @@
 #include <stdio.h>
 using namespace cv;
 
+/** Global variables */
+String cascade_name = "cascade.xml";
+CascadeClassifier cascade;
+
+
 Mat sobel (Mat input/*, Mat dx, Mat dy, Mat magnitude, Mat direction*/) {
 
   Mat dx(input.rows, input.cols, CV_32FC1, Scalar(0));
@@ -141,7 +146,7 @@ vector<Rect> hough(Mat threshold, Mat direction, int radius) {
     }
   }
 
-  imwrite("dart0hough.jpg", output);
+  // imwrite("dart0hough.jpg", output);
   return img;
 }
 
@@ -220,8 +225,6 @@ void detectAndDisplay( Mat input )
   //   	std::cout << imgDetected[i] << "";
   //   	std::cout << "\n" << std::endl;
   // }
-  String cascade_name = "cascade.xml";
-  CascadeClassifier cascade;
 
   std::vector<Rect> dartboards;
 
@@ -235,15 +238,17 @@ void detectAndDisplay( Mat input )
   {
     rectangle(input, Point(dartboards[i].x, dartboards[i].y), Point(dartboards[i].x + dartboards[i].width, dartboards[i].y + dartboards[i].height), Scalar( 255, 0, 0 ), 2);
   }
+  std::cout << dartboards.size() << std::endl;
+
 
   for( int k = 0; k < imgDetected.size(); k++ )
   {
     rectangle(input, Point(imgDetected[k].x, imgDetected[k].y), Point(imgDetected[k].x + imgDetected[k].width, imgDetected[k].y + imgDetected[k].height), Scalar( 0, 255, 0 ), 2);
   }
 
-	for( int i = 0; i < img1.size(); i++ )
+	for( int i = 0; i < img3.size(); i++ )
 	{
-		rectangle(input, Point(img1[i].x, img1[i].y), Point(img1[i].x + img1[i].width, img1[i].y + img1[i].height), Scalar( 0, 0, 255 ), 2);
+		rectangle(input, Point(img3[i].x, img3[i].y), Point(img3[i].x + img3[i].width, img3[i].y + img3[i].height), Scalar( 0, 0, 255 ), 2);
 	}
   float truePositives = 0;
   float falsePositives = 0;
@@ -251,9 +256,9 @@ void detectAndDisplay( Mat input )
 
   for (int i = 0; i < imgDetected.size(); i++) {
 		int correct = 0;
-		for (int j = 0; j < img1.size(); j++) {
+		for (int j = 0; j < img3.size(); j++) {
 			Rect r1(imgDetected[i].x, imgDetected[i].y,imgDetected[i].width,imgDetected[i].height);
-			Rect r2(img1[j].x, img1[j].y,img1[j].width,img1[j].height);
+			Rect r2(img3[j].x, img3[j].y,img3[j].width,img3[j].height);
 			Rect intersection = r1 & r2;
 			Rect unionA = r1 | r2;
 			float iWidth = intersection.width;
@@ -261,7 +266,7 @@ void detectAndDisplay( Mat input )
 			float uWidth = unionA.width;
 			float uHeight = unionA.height;
 			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
-			if (areaRatio > 0.2f) {
+			if (areaRatio >= 0.25f) {
 				correct = 1;
 				truePositives += 1;
 				printf("IOU is %f\n",areaRatio);
@@ -270,7 +275,7 @@ void detectAndDisplay( Mat input )
 		if (correct == 0) {
 			falsePositives++;
 		}
-		falseNegatives = img1.size()-truePositives;
+		falseNegatives = img3.size()-truePositives;
 	}
 	float recall = truePositives/(truePositives+falseNegatives);
 	float precision = truePositives/(truePositives+falsePositives);
@@ -280,21 +285,11 @@ void detectAndDisplay( Mat input )
 	printf("False positives: %f\n", falsePositives);
   printf("False negatives: %f\n", falseNegatives);
 	printf("F1 score is: %f\n", f1score);
-	imwrite("dart1Comb.jpg", input);
+	imwrite("dart3Comb.jpg", input);
 }
 
 int main() {
-
-  // Mat input = imread("dart0.jpg", 0);
-  // Mat direction = sobel(input);
-  //
-  // Mat magnitude = imread("magnitude.jpg", 0);
-  // threshold(magnitude, 50);
-  //
-  // Mat threshold = imread("threshold.jpg", 0);
-  // hough(threshold, direction, 150);
-
-  Mat input = imread("dart1.jpg", 1);
+  Mat input = imread("dart3.jpg", 1);
   detectAndDisplay(input);
   return 0;
 }

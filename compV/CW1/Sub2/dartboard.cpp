@@ -48,6 +48,7 @@ void detectAndDisplay( Mat frame )
 	std::vector<Rect> img2;
 	img2.push_back(Rect(106, 98, 84, 84));
 
+
 	std::vector<Rect> img3;
 	img3.push_back(Rect(326, 149, 64, 67));
 
@@ -117,17 +118,19 @@ void detectAndDisplay( Mat frame )
 
 	float truePositives = 0;
 
-	for( int i = 0; i < img1.size(); i++ )
+	for( int i = 0; i < img15.size(); i++ )
 	{
-		rectangle(frame, Point(img1[i].x, img1[i].y), Point(img1[i].x + img1[i].width, img1[i].y + img1[i].height), Scalar( 0, 0, 255 ), 2);
+		rectangle(frame, Point(img15[i].x, img15[i].y), Point(img15[i].x + img15[i].width, img15[i].y + img15[i].height), Scalar( 0, 0, 255 ), 2);
 	}
 
 	float falsePositives = 0;
+	float falseNegatives = 0;
+
 	for (int i = 0; i < dartboards.size(); i++) {
 		int correct = 0;
-		for (int j = 0; j < img1.size(); j++) {
+		for (int j = 0; j < img15.size(); j++) {
 			Rect r1(dartboards[i].x, dartboards[i].y,dartboards[i].width,dartboards[i].height);
-			Rect r2(img1[j].x, img1[j].y,img1[j].width,img1[j].height);
+			Rect r2(img15[j].x, img15[j].y,img15[j].width,img15[j].height);
 			Rect intersection = r1 & r2;
 			Rect unionA = r1 | r2;
 			float iWidth = intersection.width;
@@ -135,24 +138,27 @@ void detectAndDisplay( Mat frame )
 			float uWidth = unionA.width;
 			float uHeight = unionA.height;
 			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
-			if (areaRatio > 0.5f) {
+			if (areaRatio >= 0.25f) {
 				correct = 1;
 				truePositives += 1;
-				printf("IOU is %f\n", i, j, areaRatio);
+				printf("IOU is %f\n",areaRatio);
 			 }
 		}
 		if (correct == 0) {
 			falsePositives++;
 		}
+		// falseNegatives = img15.size()-truePositives;
+		falseNegatives = 0;
 	}
-	float tpr = truePositives/dartboards.size();
+	float recall = truePositives/(truePositives+falseNegatives);
 	float precision = truePositives/(truePositives+falsePositives);
-	float f1score = (2*(tpr*precision))/(tpr+precision);
+	float f1score = 2*((recall*precision)/(recall+precision));
+	printf("Tpr: %f\n", recall);
 	printf("True positives: %f\n", truePositives);
 	printf("False positives: %f\n", falsePositives);
-	printf("Tpr: %f\n", tpr);
+	printf("False negatives: %f\n", falseNegatives);
 	printf("F1 score is: %f\n", f1score);
 
-	imwrite("dart1T.jpg", frame);
+	// imwrite("dart15T2.jpg", frame);
 
 }

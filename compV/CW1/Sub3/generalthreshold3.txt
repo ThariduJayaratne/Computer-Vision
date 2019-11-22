@@ -1,0 +1,52 @@
+THRESHOLD = 0.25
+
+IMG 0
+
+
+IMG 1
+IOU is 0.940912
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 2
+IOU is 0.604938
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 3
+IOU is 0.786974
+Tpr: 1.000000
+True positives: 1.000000
+False positives: 0.000000
+False negatives: 0.000000
+F1 score is: 1.000000
+
+IMG 4
+
+IMG 5
+
+IMG 6
+
+IMG 7
+
+IMG 8
+
+IMG 9
+
+IMG 10
+
+IMG 11
+
+IMG 12
+
+IMG 13
+
+IMG 14
+
+IMG 15
