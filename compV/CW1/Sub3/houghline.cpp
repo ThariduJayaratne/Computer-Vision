@@ -8,6 +8,9 @@
 #include <stdio.h>
 using namespace cv;
 
+String cascade_name = "cascade.xml";
+CascadeClassifier cascade;
+
 Mat sobel (Mat input/*, Mat dx, Mat dy, Mat magnitude, Mat direction*/) {
 
   Mat dx(input.rows, input.cols, CV_32FC1, Scalar(0));
@@ -70,6 +73,44 @@ void threshold(Mat input, int val) {
   imwrite("threshold.jpg", output);
 }
 
+void houghline(Mat threshold, Mat direction){
+  int diagonal = sqrt((threshold.rows*threshold.rows)+(threshold.cols*threshold.cols));
+  Mat output(threshold.rows, threshold.cols, CV_32FC1, Scalar(0));
+  int accumulator[180][diagonal];
+  for (int i = 0; i < diagonal; i++) {
+    for (int j = 0; j < 180 ; j++) {
+        accumulator[j][i] = 0;
+      }
+    }
+    for (int x = 0; x < threshold.rows; x++) {
+      for (int y = 0; y < threshold.cols; y++) {
+          float angle = (direction.at<float>(x,y)*180)/3.1415926;
+          int variation = 5;
+          if (threshold.at<uchar>(x, y) == 255) {
+            float minA,maxA =0;
+            if (angle<0) minA += 180+variation;
+            else if(angle>180) maxA -= 180+variation;
+            for(int z =0;z<180;z++){
+              if(angle>minA && angle<maxA){
+              float perpenD = x*cos(z)+ y*sin(z);
+              if(perpenD<=diagonal){
+                accumulator[z][(int)perpenD] +=1;
+              }
+            }
+          }
+        }
+      }
+    }
+    for(int i=0;i<diagonal;i++){
+      for(int j=0;j<180;j++){
+        if(accumulator[j][i] > 255) accumulator[j][i] = 255;
+        output.at<uchar>(j,i) = accumulator[j][i];
+      }
+    }
+    imwrite("dart3lines.jpg", output);
+}
+
+
 int ***malloc3dArray(int dim1, int dim2, int dim3)
 {
     int i, j, k;
@@ -116,7 +157,6 @@ vector<Rect> hough(Mat threshold, Mat direction, int radius) {
             output.at<float>(xon, yon) += 1;
             accumulator[xon][yon][r] += 1;
           }
-
         }
       }
     }
@@ -217,24 +257,35 @@ void detectAndDisplay( Mat input )
 
   std::vector<Rect> imgDetected = hough(threshold, direction, 150);
 
+  equalizeHist( gray_image, gray_image );
+  std::vector<Rect> dartboards;
+
+  cascade.detectMultiScale( gray_image, dartboards, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500, 500) );
+
+  // for( int i = 0; i < dartboards.size(); i++ )
+  // {
+  //   rectangle(input,dartboards[i], Scalar( 255, 0, 0 ), 2);
+  // }
+  // std::cout << dartboards.size() << std::endl;
+
   for( int k = 0; k < imgDetected.size(); k++ )
   {
-    rectangle(input, Point(imgDetected[k].x, imgDetected[k].y), Point(imgDetected[k].x + imgDetected[k].width, imgDetected[k].y + imgDetected[k].height), Scalar( 0, 255, 0 ), 2);
+    rectangle(input, imgDetected[k], Scalar( 0, 255, 0 ), 2);
   }
 
-	for( int i = 0; i < img3.size(); i++ )
-	{
-		rectangle(input, Point(img3[i].x, img3[i].y), Point(img3[i].x + img3[i].width, img3[i].y + img3[i].height), Scalar( 0, 0, 255 ), 2);
-	}
+	// for( int i = 0; i < img3.size(); i++ )
+	// {
+	// 	rectangle(input, img3[i], Scalar( 0, 0, 255 ), 2);
+	// }
   float truePositives = 0;
   float falsePositives = 0;
   float falseNegatives = 0;
-
+  std::vector<Rect> accurateViola;
   for (int i = 0; i < imgDetected.size(); i++) {
 		int correct = 0;
-		for (int j = 0; j < img3.size(); j++) {
+		for (int j = 0; j < dartboards.size(); j++) {
 			Rect r1(imgDetected[i].x, imgDetected[i].y,imgDetected[i].width,imgDetected[i].height);
-			Rect r2(img3[j].x, img3[j].y,img3[j].width,img3[j].height);
+			Rect r2(dartboards[j].x, dartboards[j].y,dartboards[j].width,dartboards[j].height);
 			Rect intersection = r1 & r2;
 			Rect unionA = r1 | r2;
 			float iWidth = intersection.width;
@@ -242,9 +293,11 @@ void detectAndDisplay( Mat input )
 			float uWidth = unionA.width;
 			float uHeight = unionA.height;
 			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
-			if (areaRatio >= 0.25f) {
+			if (areaRatio >= 0.5f) {
 				correct = 1;
 				truePositives += 1;
+        accurateViola.push_back(Rect(dartboards[j].x, dartboards[j].y,dartboards[j].width,dartboards[j].height));
+        rectangle(input,Point(dartboards[j].x, dartboards[j].y), Point(dartboards[j].x + dartboards[j].width, dartboards[j].y + dartboards[j].height), Scalar( 255, 0, 0 ), 2);
 				printf("IOU is %f\n",areaRatio);
 			 }
 		}
@@ -266,6 +319,7 @@ void detectAndDisplay( Mat input )
 
 int main() {
   Mat input = imread("dart3.jpg", 1);
+  if( !cascade.load( cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
   detectAndDisplay(input);
   return 0;
 }
