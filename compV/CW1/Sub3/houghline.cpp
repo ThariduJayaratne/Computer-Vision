@@ -11,7 +11,7 @@ using namespace cv;
 String cascade_name = "cascade.xml";
 CascadeClassifier cascade;
 
-Mat sobel (Mat input/*, Mat dx, Mat dy, Mat magnitude, Mat direction*/) {
+Mat sobel (Mat input) {
 
   Mat dx(input.rows, input.cols, CV_32FC1, Scalar(0));
   Mat dy(input.rows, input.cols, CV_32FC1, Scalar(0));
@@ -46,7 +46,6 @@ Mat sobel (Mat input/*, Mat dx, Mat dy, Mat magnitude, Mat direction*/) {
   normalize(dx, dx, 0, 255, NORM_MINMAX);
   normalize(dy, dy, 0, 255, NORM_MINMAX);
   normalize(magnitude, magnitude, 0, 255, NORM_MINMAX);
-  // normalize(direction, direction, 0 , 255, NORM_MINMAX);
 
   imwrite("dx.jpg", dx);
   imwrite("dy.jpg", dy);
@@ -73,54 +72,72 @@ void threshold(Mat input, int val) {
   imwrite("threshold.jpg", output);
 }
 
-// void houghline(Mat threshold, Mat direction){
-//   int diagonal = sqrt((threshold.rows*threshold.rows)+(threshold.cols*threshold.cols));
-//   Mat output(threshold.rows, threshold.cols, CV_32FC1, Scalar(0));
-//   int accumulator[180][diagonal];
-//   for (int i = 0; i < diagonal; i++) {
-//     for (int j = 0; j < 180 ; j++) {
-//         accumulator[j][i] = 0;
-//       }
-//     }
-//     for (int x = 0; x < threshold.rows; x++) {
-//       for (int y = 0; y < threshold.cols; y++) {
-//           float angle = (direction.at<float>(x,y)*180)/3.1415926;
-//           int variation = 5;
-//           if (threshold.at<uchar>(x, y) == 255) {
-//             float minA,maxA =0;
-//             if (angle<0) minA += 180+variation;
-//             else if(angle>180) maxA -= 180+variation;
-//             for(int z =0;z<180;z++){
-//               if(angle>minA && angle<maxA){
-//               float perpenD = x*cos(z)+ y*sin(z);
-//               if(perpenD<=diagonal){
-//                 accumulator[z][(int)perpenD] +=1;
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-//     normalize(output, output, 0, 255, NORM_MINMAX);
-//     imwrite("dart3lines.jpg", output);
-// }
-
-
-int ***malloc3dArray(int dim1, int dim2, int dim3)
-{
-    int i, j, k;
-    int ***array = (int ***) malloc(dim1 * sizeof(int **));
+int **malloc2dArray(int dim1, int dim2) {
+    int i, j;
+    int **array = (int **) malloc(dim1 * sizeof(int *));
     for (i = 0; i < dim1; i++) {
-        array[i] = (int **) malloc(dim2 * sizeof(int *));
-	for (j = 0; j < dim2; j++) {
-  	    array[i][j] = (int *) malloc(dim3 * sizeof(int));
-	}
+        array[i] = (int *) malloc(dim2 * sizeof(int));
     }
     return array;
 }
 
-vector<Rect> hough(Mat threshold, Mat direction, int radius) {
+void houghline(Mat thresholded, Mat direction) {
+  int diagonal = sqrt((thresholded.rows * thresholded.rows) + (thresholded.cols * thresholded.cols));
+  Mat output(diagonal, 360, CV_32FC1, Scalar(0));
+  Mat output2(thresholded.rows, thresholded.cols, CV_32FC1, Scalar(0));
+  int **accumulator = malloc2dArray(diagonal,360);
+  for (int i = 0; i < diagonal; i++) {
+    for (int j = 0; j < 360; j++) {
+        accumulator[i][j] = 0;
+    }
+  }
+  for (int x = 0; x < thresholded.rows; x++) {
+    for (int y = 0; y < thresholded.cols; y++) {
+      float angle = direction.at<float>(x,y);
+      if (thresholded.at<uchar>(x, y) == 255) {
+        int perpenD = x * cos(angle) + y * sin(angle);
+        if (perpenD < diagonal && perpenD >= 0) {
+          int degrees = (angle*180/3.1415926) + 180;
+          accumulator[perpenD][degrees] += 1;
+        }
+      }
+    }
+  }
+  for (int i = 0; i < diagonal; i++) {
+    for (int j = 0; j < 360; j++) {
+      output.at<float>(i, j) = accumulator[i][j];
+    }
+  }
+  normalize(output, output, 0, 255, NORM_MINMAX);
+  cv::threshold(output, output, 140, 255, THRESH_BINARY);
 
+  for (int i = 0; i < diagonal; i++) {
+    for (int j = 0; j < 360; j++) {
+      if (output.at<uchar>(i,j) == 255) {
+        for (int x = 0; x < thresholded.rows; x++) {
+          int radians = (j*3.1415926/180) + 180;
+          int y = (i - (x * cos(radians)))/sin(radians);
+          circle(output2, Point(10, 10), 10, Scalar(0, 0, 255), 2);
+        }
+      }
+    }
+  }
+  imwrite("dart15lines.jpg", output2);
+}
+
+int ***malloc3dArray(int dim1, int dim2, int dim3) {
+  int i, j, k;
+  int ***array = (int ***) malloc(dim1 * sizeof(int **));
+  for (i = 0; i < dim1; i++) {
+    array[i] = (int **) malloc(dim2 * sizeof(int *));
+	  for (j = 0; j < dim2; j++) {
+  	   array[i][j] = (int *) malloc(dim3 * sizeof(int));
+	  }
+  }
+  return array;
+}
+
+vector<Rect> hough(Mat threshold, Mat direction, int radius) {
   Mat output(threshold.rows, threshold.cols, CV_32FC1, Scalar(0));
   int ***accumulator = malloc3dArray(threshold.rows,threshold.cols,radius);
   for (int i = 0; i < threshold.rows; i++) {
@@ -158,10 +175,10 @@ vector<Rect> hough(Mat threshold, Mat direction, int radius) {
 
   normalize(output, output, 0, 255, NORM_MINMAX);
   std::vector<Rect> img;
-  int xdivisions = output.rows/4;
-  int ydivisions = output.cols/4;
-  for (int x = 0; x < xdivisions; x++) {
-    for (int y = 0; y < ydivisions; y++) {
+  int xdivisions = output.rows/6;
+  int ydivisions = output.cols/6;
+  for (int x = 0; x < 6; x++) {
+    for (int y = 0; y < 6; y++) {
       int found = 0;
       int completed = 0;
       while (found == 0 && completed == 0) {
@@ -176,7 +193,7 @@ vector<Rect> hough(Mat threshold, Mat direction, int radius) {
                   maxRadius = r;
                 }
               }
-              circle(output, Point(j, i), maxRadius, Scalar(0, 0, 255), 2);
+              // circle(output, Point(j, i), maxRadius, Scalar(0, 0, 255), 2);
               img.push_back(Rect((j-maxRadius) % output.cols, (i-maxRadius) % output.rows, 2*maxRadius % output.cols, 2*maxRadius % output.rows));
               found = 1;
               break;
@@ -188,71 +205,11 @@ vector<Rect> hough(Mat threshold, Mat direction, int radius) {
       }
     }
   }
-
-  // imwrite("dart0hough.jpg", output);
   return img;
 }
 
 
-void detectAndDisplay( Mat input )
-{
-  //Real dartboards
-  std::vector<Rect> img0;
-  img0.push_back(Rect(442, 12, 151, 169));
-
-  std::vector<Rect> img1;
-  img1.push_back(Rect(191, 130, 203, 193));
-
-  std::vector<Rect> img2;
-  img2.push_back(Rect(106, 98, 84, 84));
-
-  std::vector<Rect> img3;
-  img3.push_back(Rect(326, 149, 64, 67));
-
-  std::vector<Rect> img4;
-  img4.push_back(Rect(186, 96, 182, 212));
-
-  std::vector<Rect> img5;
-  img5.push_back(Rect(430, 139, 114, 117));
-
-  std::vector<Rect> img6;
-  img6.push_back(Rect(212, 117, 63, 64));
-
-  std::vector<Rect> img7;
-  img7.push_back(Rect(257, 174, 133, 138));
-
-  std::vector<Rect> img8;
-  img8.push_back(Rect(63, 251, 63, 97));
-  img8.push_back(Rect(845, 218, 110, 116));
-
-  std::vector<Rect> img9;
-  img9.push_back(Rect(210, 49, 228, 226));
-
-  std::vector<Rect> img10;
-  img10.push_back(Rect(90, 106, 99, 109));
-  img10.push_back(Rect(588, 137, 55, 77));
-  img10.push_back(Rect(919, 150, 31, 65));
-
-  std::vector<Rect> img11;
-  img11.push_back(Rect(179, 108, 51, 73));
-  img11.push_back(Rect(214, 255, 15, 19));
-  img11.push_back(Rect(441, 113, 56, 75));
-
-  std::vector<Rect> img12;
-  img12.push_back(Rect(165, 77, 51, 141));
-
-  std::vector<Rect> img13;
-  img13.push_back(Rect(282, 120, 118, 129));
-
-  std::vector<Rect> img14;
-  img14.push_back(Rect(124, 103, 120, 122));
-  img14.push_back(Rect(991, 100, 119, 116));
-
-  std::vector<Rect> img15;
-  img15.push_back(Rect(158, 59, 128, 138));
-
-  int width,height;
-
+void detectAndDisplay(Mat input) {
   Mat gray_image;
   cvtColor( input, gray_image, CV_BGR2GRAY );
 
@@ -261,31 +218,18 @@ void detectAndDisplay( Mat input )
   Mat magnitude = imread("magnitude.jpg", 0);
   threshold(magnitude, 30);
 
-  Mat threshold = imread("threshold.jpg", 0);
+  Mat thresholded = imread("threshold.jpg", 0);
 
-  std::vector<Rect> imgDetected = hough(threshold, direction, 150);
-  // houghline(magnitude,direction);
+  std::vector<Rect> imgDetected = hough(thresholded, direction, 150);
+  houghline(thresholded,direction);
 
   equalizeHist( gray_image, gray_image );
   std::vector<Rect> dartboards;
 
   cascade.detectMultiScale( gray_image, dartboards, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500, 500) );
 
-  //Viola-Jones
-  for( int i = 0; i < dartboards.size(); i++ )
-  {
-    rectangle(input,dartboards[i], Scalar( 255, 0, 0 ), 2);
-  }
-  std::cout << dartboards.size() << std::endl;
-
-  //Hough
-  for( int k = 0; k < imgDetected.size(); k++ )
-  {
-    rectangle(input, imgDetected[k], Scalar( 0, 255, 0 ), 2);
-  }
-  std::cout << imgDetected.size() << std::endl;
-
   std::vector<Rect> accurateViola;
+
   for (int i = 0; i < imgDetected.size(); i++) {
     int found = 0;
 		for (int j = 0; j < dartboards.size(); j++) {
@@ -298,49 +242,42 @@ void detectAndDisplay( Mat input )
 			float uWidth = unionA.width;
 			float uHeight = unionA.height;
 			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
-			if (areaRatio >= 0.3f) {
+
+      Point dartcenter = Point(dartboards[j].x +(dartboards[j].width)/2,dartboards[j].y + (dartboards[j].height)/2);
+      Point houghcenter = Point(imgDetected[j].x +(imgDetected[j].width)/2,imgDetected[j].y + (imgDetected[j].height)/2);
+
+			if (areaRatio >= 0.35f) {
         accurateViola.push_back(Rect(dartboards[j].x, dartboards[j].y,dartboards[j].width,dartboards[j].height));
         found = 1;
         break;
 			 }
-       if (found == 1) break;
+       if(found == 1) break;
+       }
 		}
 
-    //Combined
-    for( int i = 0; i < accurateViola.size(); i++ )
-    {
-      rectangle(input, accurateViola[i], Scalar( 0, 0, 255 ), 2);
-    }
-    std::cout << accurateViola.size() << std::endl;
-	// 	if (correct == 0) {
-	// 		falsePositives++;
-	// 	}
-	// 	falseNegatives = img4.size()-truePositives;
-	// }
-	// float recall = truePositives/(truePositives+falseNegatives);
-	// float precision = truePositives/(truePositives+falsePositives);
-	// float f1score = 2*((recall*precision)/(recall+precision));
-	// printf("Tpr: %f\n", recall);
-	// printf("True positives: %f\n", truePositives);
-	// printf("False positives: %f\n", falsePositives);
-  // printf("False negatives: %f\n", falseNegatives);
-	// printf("F1 score is: %f\n", f1score);
-	imwrite("dart5Comb.jpg", input);
+  //Viola-Jones
+  for( int i = 0; i < dartboards.size(); i++ ) {
+    rectangle(input,dartboards[i], Scalar( 255, 0, 0 ), 2);
+  }
+  std::cout << dartboards.size() << std::endl;
 
-  // float truePositives = 0;
-  // float falsePositives = 0;
-  // float falseNegatives = 0;
-  // for (int i = 0; i < accurateViola.size(); i++) {
-  //   int correct = 0;
-  //   for (int j = 0; j < img4.size(); j++) {
-  //
-  //   }
-  // }
-}
+  //Hough
+  for( int k = 0; k < imgDetected.size(); k++ ) {
+    rectangle(input, imgDetected[k], Scalar( 0, 255, 0 ), 2);
+  }
+  std::cout << imgDetected.size() << std::endl;
+
+  //Combined
+  for( int i = 0; i < accurateViola.size(); i++ ) {
+    rectangle(input, accurateViola[i], Scalar( 0, 0, 255 ), 2);
+  }
+  std::cout << accurateViola.size() << std::endl;
+
+	imwrite("dart14Comb.jpg", input);
 }
 
 int main() {
-  Mat input = imread("dart5.jpg", 1);
+  Mat input = imread("dart14.jpg", 1);
   if( !cascade.load( cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
   detectAndDisplay(input);
   return 0;

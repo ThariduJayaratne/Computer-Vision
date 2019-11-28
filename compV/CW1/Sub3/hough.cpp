@@ -222,7 +222,7 @@ void detectAndDisplay( Mat input )
     rectangle(input, Point(imgDetected[k].x, imgDetected[k].y), Point(imgDetected[k].x + imgDetected[k].width, imgDetected[k].y + imgDetected[k].height), Scalar( 0, 255, 0 ), 2);
   }
 
-	for( int i = 0; i < img3.size(); i++ )
+	for( int i = 0; i < img3.si	for( int i = 0; i < img3.size(); i++ )
 	{
 		rectangle(input, Point(img3[i].x, img3[i].y), Point(img3[i].x + img3[i].width, img3[i].y + img3[i].height), Scalar( 0, 0, 255 ), 2);
 	}
@@ -260,8 +260,84 @@ void detectAndDisplay( Mat input )
 	printf("True positives: %f\n", truePositives);
 	printf("False positives: %f\n", falsePositives);
   printf("False negatives: %f\n", falseNegatives);
+	printf("F1 score is: %f\n", f1score);ze(); i++ )
+	{
+		rectangle(input, Point(img3[i].x, img3[i].y), Point(img3[i].x + img3[i].width, img3[i].y + img3[i].height), Scalar( 0, 0, 255 ), 2);
+	}
+  float truePositives = 0;
+  float falsePositives = 0;
+  float falseNegatives = 0;
+
+  for (int i = 0; i < imgDetected.size(); i++) {
+		int correct = 0;
+		for (int j = 0; j < img3.size(); j++) {
+			Rect r1(imgDetected[i].x, imgDetected[i].y,imgDetected[i].width,imgDetected[i].height);
+			Rect r2(img3[j].x, img3[j].y,img3[j].width,img3[j].height);
+			Rect intersection = r1 & r2;
+			Rect unionA = r1 | r2;
+			float iWidth 	for( int i = 0; i < img3.size(); i++ )
+	{
+		rectangle(input, Point(img3[i].x, img3[i].y), Point(img3[i].x + img3[i].width, img3[i].y + img3[i].height), Scalar( 0, 0, 255 ), 2);
+	}
+  float truePositives = 0;
+  float falsePositives = 0;
+  float falseNegatives = 0;
+
+  for (int i = 0; i < imgDetected.size(); i++) {
+		int correct = 0;
+		for (int j = 0; j < img3.size(); j++) {
+			Rect r1(imgDetected[i].x, imgDetected[i].y,imgDetected[i].width,imgDetected[i].height);
+			Rect r2(img3[j].x, img3[j].y,img3[j].width,img3[j].height);
+			Rect intersection = r1 & r2;
+			Rect unionA = r1 | r2;
+			float iWidth = intersection.width;
+			float iHeight = intersection.height;
+			float uWidth = unionA.width;
+			float uHeight = unionA.height;
+			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
+			if (areaRatio >= 0.25f) {
+				correct = 1;
+				truePositives += 1;
+				printf("IOU is %f\n",areaRatio);
+			 }
+		}
+		if (correct == 0) {
+			falsePositives++;
+		}
+		falseNegatives = img3.size()-truePositives;
+	}
+	float recall = truePositives/(truePositives+falseNegatives);
+	float precision = truePositives/(truePositives+falsePositives);
+	float f1score = 2*((recall*precision)/(recall+precision));
+	printf("Tpr: %f\n", recall);
+	printf("True positives: %f\n", truePositives);
+	printf("False positives: %f\n", falsePositives);
+  printf("False negatives: %f\n", falseNegatives);
+	printf("F1 score is: %f\n", f1score);= intersection.width;
+			float iHeight = intersection.height;
+			float uWidth = unionA.width;
+			float uHeight = unionA.height;
+			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
+			if (areaRatio >= 0.25f) {
+				correct = 1;
+				truePositives += 1;
+				printf("IOU is %f\n",areaRatio);
+			 }
+		}
+		if (correct == 0) {
+			falsePositives++;
+		}
+		falseNegatives = img3.size()-truePositives;
+	}
+	float recall = truePositives/(truePositives+falseNegatives);
+	float precision = truePositives/(truePositives+falsePositives);
+	float f1score = 2*((recall*precision)/(recall+precision));
+	printf("Tpr: %f\n", recall);
+	printf("True positives: %f\n", truePositives);
+	printf("False positives: %f\n", falsePositives);
+  printf("False negatives: %f\n", falseNegatives);
 	printf("F1 score is: %f\n", f1score);
-	imwrite("dart3Comb.jpg", input);
+	imwrite("dart3T.jpg", input);
 }
 
 int main() {
