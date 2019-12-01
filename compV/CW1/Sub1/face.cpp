@@ -36,6 +36,24 @@ int main( int argc, const char** argv )
 /** @function detectAndDisplay */
 void detectAndDisplay( Mat frame )
 {
+	std::vector<Rect> img0;
+	img0.push_back(Rect(176,208,95,92));
+
+	std::vector<Rect> img6;
+	img6.push_back(Rect(282,96,47,64));
+
+	std::vector<Rect> img7;
+	img7.push_back(Rect(346,183,87,113));
+
+  std::vector<Rect> img11;
+  img11.push_back(Rect(322,66,68,92));
+
+	std::vector<Rect> img9;
+  img9.push_back(Rect(86,220,120,125));
+
+  std::vector<Rect> img8;
+  img8.push_back(Rect(164,274,64,82));
+
 	std::vector<Rect> img4;
 	img4.push_back(Rect(350,101,127,159));
 
@@ -81,13 +99,13 @@ void detectAndDisplay( Mat frame )
        // 4. Draw box around faces found
 	for( int i = 0; i < faces.size(); i++ )
 	{
-		rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 0, 255, 0 ), 2);
+		rectangle(frame, faces[i], Scalar( 0, 255, 0 ), 2);
 	}
 	float truePositives = 0;
 
-	for( int i = 0; i < img15.size(); i++ )
+	for( int i = 0; i < img11.size(); i++ )
 	{
-		rectangle(frame, Point(img15[i].x, img15[i].y), Point(img15[i].x + img15[i].width, img15[i].y + img15[i].height), Scalar( 0, 0, 255 ), 2);
+		rectangle(frame, img11[i], Scalar( 0, 0, 255 ), 2);
 	}
 
 	float falsePositives = 0;
@@ -95,9 +113,9 @@ void detectAndDisplay( Mat frame )
 
 	for (int i = 0; i < faces.size(); i++) {
 		int correct = 0;
-		for (int j = 0; j < img15.size(); j++) {
+		for (int j = 0; j < img11.size(); j++) {
 			Rect r1(faces[i].x, faces[i].y,faces[i].width,faces[i].height);
-			Rect r2(img15[j].x, img15[j].y,img15[j].width,img15[j].height);
+			Rect r2(img11[j].x, img11[j].y,img11[j].width,img11[j].height);
 			Rect intersection = r1 & r2;
 			Rect unionA = r1 | r2;
 			float iWidth = intersection.width;
@@ -114,18 +132,20 @@ void detectAndDisplay( Mat frame )
 		if (correct == 0) {
 			falsePositives++;
 		}
-	  falseNegatives = img15.size()-truePositives;
+	  falseNegatives = img11.size()-truePositives;
 	}
 	// float tpr = truePositives/faces.size();
 	float recall = truePositives/(truePositives+falseNegatives);
 	float precision = truePositives/(truePositives+falsePositives);
 	float f1score = 2*((recall*precision)/(recall+precision));
 	printf("Tpr: %f\n", recall);
+
 	printf("True positives: %f\n", truePositives);
+	printf("precision: %f\n", precision);
 	printf("False positives: %f\n", falsePositives);
 	printf("False negatives: %f\n", falseNegatives);
 	printf("F1 score is: %f\n", f1score);
 
-	// imwrite("dart4T.jpg", frame);
+	imwrite("dart11T.jpg", frame);
 
 }

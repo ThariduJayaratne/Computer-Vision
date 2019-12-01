@@ -125,6 +125,7 @@ void detectAndDisplay( Mat frame )
 
 	float falsePositives = 0;
 	float falseNegatives = 0;
+	int size = img15.size();
 
 	for (int i = 0; i < dartboards.size(); i++) {
 		int correct = 0;
@@ -142,13 +143,13 @@ void detectAndDisplay( Mat frame )
 				correct = 1;
 				truePositives += 1;
 				printf("IOU is %f\n",areaRatio);
+				img15.erase(img15.begin() + j);
 			 }
 		}
 		if (correct == 0) {
 			falsePositives++;
 		}
-		// falseNegatives = img15.size()-truePositives;
-		falseNegatives = 0;
+		falseNegatives = size-truePositives;
 	}
 	float recall = truePositives/(truePositives+falseNegatives);
 	float precision = truePositives/(truePositives+falsePositives);
@@ -159,6 +160,6 @@ void detectAndDisplay( Mat frame )
 	printf("False negatives: %f\n", falseNegatives);
 	printf("F1 score is: %f\n", f1score);
 
-	// imwrite("dart15T2.jpg", frame);
+	// imwrite("dart15T.jpg", frame);
 
 }

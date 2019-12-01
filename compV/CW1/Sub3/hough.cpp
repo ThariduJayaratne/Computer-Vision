@@ -8,6 +8,9 @@
 #include <stdio.h>
 using namespace cv;
 
+String cascade_name = "cascade.xml";
+CascadeClassifier cascade;
+
 Mat sobel (Mat input/*, Mat dx, Mat dy, Mat magnitude, Mat direction*/) {
 
   Mat dx(input.rows, input.cols, CV_32FC1, Scalar(0));
@@ -141,7 +144,7 @@ vector<Rect> hough(Mat threshold, Mat direction, int radius) {
     }
   }
 
-  // imwrite("dart0hough.jpg", output);
+  // imwrite("dart7hough.jpg", output);
   return img;
 }
 
@@ -215,26 +218,51 @@ void detectAndDisplay( Mat input )
 
   Mat threshold = imread("threshold.jpg", 0);
 
-  std::vector<Rect> imgDetected = hough(threshold, direction, 150);
+  std::vector<Rect> imgDetected = hough(threshold, direction, 90);
 
-  for( int k = 0; k < imgDetected.size(); k++ )
-  {
-    rectangle(input, Point(imgDetected[k].x, imgDetected[k].y), Point(imgDetected[k].x + imgDetected[k].width, imgDetected[k].y + imgDetected[k].height), Scalar( 0, 255, 0 ), 2);
+	for( int i = 0; i < img10.size();i++)
+	{
+		rectangle(input, Point(img10[i].x, img10[i].y), Point(img10[i].x + img10[i].width, img10[i].y + img10[i].height), Scalar( 0, 0, 255 ), 2);
+	}
+  std::vector<Rect> dartboards;
+  cascade.detectMultiScale( gray_image, dartboards, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500, 500) );
+
+  std::vector<Rect> accurateViola;
+  for (int i = 0; i < imgDetected.size(); i++) {
+    int found = 0;
+		for (int j = 0; j < dartboards.size(); j++) {
+			Rect r1(imgDetected[i].x, imgDetected[i].y,imgDetected[i].width,imgDetected[i].height);
+			Rect r2(dartboards[j].x, dartboards[j].y,dartboards[j].width,dartboards[j].height);
+			Rect intersection = r1 & r2;
+			Rect unionA = r1 | r2;
+			float iWidth = intersection.width;
+			float iHeight = intersection.height;
+			float uWidth = unionA.width;
+			float uHeight = unionA.height;
+			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
+
+			if (areaRatio >= 0.175f) {
+        accurateViola.push_back(Rect(imgDetected[i].x + imgDetected[i].width/2 - dartboards[j].width/2, imgDetected[i].y + imgDetected[i].height/2 - dartboards[j].height/2, dartboards[j].width, dartboards[j].height));
+        found = 1;
+        break;
+			 }
+       if(found == 1) break;
+       }
+		}
+  for( int i = 0; i < accurateViola.size(); i++ ) {
+    rectangle(input, accurateViola[i], Scalar(0, 255, 0), 2);
   }
+  std::cout << accurateViola.size() << std::endl;
 
-	for( int i = 0; i < img3.si	for( int i = 0; i < img3.size(); i++ )
-	{
-		rectangle(input, Point(img3[i].x, img3[i].y), Point(img3[i].x + img3[i].width, img3[i].y + img3[i].height), Scalar( 0, 0, 255 ), 2);
-	}
   float truePositives = 0;
   float falsePositives = 0;
   float falseNegatives = 0;
-
-  for (int i = 0; i < imgDetected.size(); i++) {
+  int size = img10.size();
+  for (int i = 0; i < accurateViola.size(); i++) {
 		int correct = 0;
-		for (int j = 0; j < img3.size(); j++) {
-			Rect r1(imgDetected[i].x, imgDetected[i].y,imgDetected[i].width,imgDetected[i].height);
-			Rect r2(img3[j].x, img3[j].y,img3[j].width,img3[j].height);
+		for (int j = 0; j < img10.size(); j++) {
+			Rect r1(accurateViola[i].x, accurateViola[i].y,accurateViola[i].width,accurateViola[i].height);
+			Rect r2(img10[j].x, img10[j].y,img10[j].width,img10[j].height);
 			Rect intersection = r1 & r2;
 			Rect unionA = r1 | r2;
 			float iWidth = intersection.width;
@@ -246,88 +274,13 @@ void detectAndDisplay( Mat input )
 				correct = 1;
 				truePositives += 1;
 				printf("IOU is %f\n",areaRatio);
+        img10.erase(img10.begin() + j);
 			 }
 		}
 		if (correct == 0) {
 			falsePositives++;
 		}
-		falseNegatives = img3.size()-truePositives;
-	}
-	float recall = truePositives/(truePositives+falseNegatives);
-	float precision = truePositives/(truePositives+falsePositives);
-	float f1score = 2*((recall*precision)/(recall+precision));
-	printf("Tpr: %f\n", recall);
-	printf("True positives: %f\n", truePositives);
-	printf("False positives: %f\n", falsePositives);
-  printf("False negatives: %f\n", falseNegatives);
-	printf("F1 score is: %f\n", f1score);ze(); i++ )
-	{
-		rectangle(input, Point(img3[i].x, img3[i].y), Point(img3[i].x + img3[i].width, img3[i].y + img3[i].height), Scalar( 0, 0, 255 ), 2);
-	}
-  float truePositives = 0;
-  float falsePositives = 0;
-  float falseNegatives = 0;
-
-  for (int i = 0; i < imgDetected.size(); i++) {
-		int correct = 0;
-		for (int j = 0; j < img3.size(); j++) {
-			Rect r1(imgDetected[i].x, imgDetected[i].y,imgDetected[i].width,imgDetected[i].height);
-			Rect r2(img3[j].x, img3[j].y,img3[j].width,img3[j].height);
-			Rect intersection = r1 & r2;
-			Rect unionA = r1 | r2;
-			float iWidth 	for( int i = 0; i < img3.size(); i++ )
-	{
-		rectangle(input, Point(img3[i].x, img3[i].y), Point(img3[i].x + img3[i].width, img3[i].y + img3[i].height), Scalar( 0, 0, 255 ), 2);
-	}
-  float truePositives = 0;
-  float falsePositives = 0;
-  float falseNegatives = 0;
-
-  for (int i = 0; i < imgDetected.size(); i++) {
-		int correct = 0;
-		for (int j = 0; j < img3.size(); j++) {
-			Rect r1(imgDetected[i].x, imgDetected[i].y,imgDetected[i].width,imgDetected[i].height);
-			Rect r2(img3[j].x, img3[j].y,img3[j].width,img3[j].height);
-			Rect intersection = r1 & r2;
-			Rect unionA = r1 | r2;
-			float iWidth = intersection.width;
-			float iHeight = intersection.height;
-			float uWidth = unionA.width;
-			float uHeight = unionA.height;
-			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
-			if (areaRatio >= 0.25f) {
-				correct = 1;
-				truePositives += 1;
-				printf("IOU is %f\n",areaRatio);
-			 }
-		}
-		if (correct == 0) {
-			falsePositives++;
-		}
-		falseNegatives = img3.size()-truePositives;
-	}
-	float recall = truePositives/(truePositives+falseNegatives);
-	float precision = truePositives/(truePositives+falsePositives);
-	float f1score = 2*((recall*precision)/(recall+precision));
-	printf("Tpr: %f\n", recall);
-	printf("True positives: %f\n", truePositives);
-	printf("False positives: %f\n", falsePositives);
-  printf("False negatives: %f\n", falseNegatives);
-	printf("F1 score is: %f\n", f1score);= intersection.width;
-			float iHeight = intersection.height;
-			float uWidth = unionA.width;
-			float uHeight = unionA.height;
-			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
-			if (areaRatio >= 0.25f) {
-				correct = 1;
-				truePositives += 1;
-				printf("IOU is %f\n",areaRatio);
-			 }
-		}
-		if (correct == 0) {
-			falsePositives++;
-		}
-		falseNegatives = img3.size()-truePositives;
+		falseNegatives = size-truePositives;
 	}
 	float recall = truePositives/(truePositives+falseNegatives);
 	float precision = truePositives/(truePositives+falsePositives);
@@ -337,11 +290,12 @@ void detectAndDisplay( Mat input )
 	printf("False positives: %f\n", falsePositives);
   printf("False negatives: %f\n", falseNegatives);
 	printf("F1 score is: %f\n", f1score);
-	imwrite("dart3T.jpg", input);
+	imwrite("dart10T.jpg", input);
 }
 
 int main() {
-  Mat input = imread("dart3.jpg", 1);
+  Mat input = imread("dart10.jpg", 1);
+  if( !cascade.load( cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
   detectAndDisplay(input);
   return 0;
 }

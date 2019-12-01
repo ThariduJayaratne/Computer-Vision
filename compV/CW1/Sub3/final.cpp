@@ -73,43 +73,6 @@ void threshold(Mat input, int val) {
   imwrite("threshold.jpg", output);
 }
 
-// void houghline(Mat threshold, Mat direction){
-//   int diagonal = sqrt((threshold.rows*threshold.rows)+(threshold.cols*threshold.cols));
-//   Mat output(threshold.rows, threshold.cols, CV_32FC1, Scalar(0));
-//   int accumulator[180][diagonal];
-//   for (int i = 0; i < diagonal; i++) {
-//     for (int j = 0; j < 180 ; j++) {
-//         accumulator[j][i] = 0;
-//       }
-//     }
-//     for (int x = 0; x < threshold.rows; x++) {
-//       for (int y = 0; y < threshold.cols; y++) {
-//           float angle = (direction.at<float>(x,y)*180)/3.1415926;
-//           int variation = 50;
-//           if (threshold.at<uchar>(x, y) == 255) {
-//             float minA,maxA;
-//             if (angle<0) minA += 180+variation;
-//             else if(angle>180) maxA -= 180+variation;
-//             else{
-//               minA = angle - variation;
-//               maxA = angle + variation;
-//             }
-//             for(int z =minA;z<maxA;z++){
-//               float radians = (z*3.1415926)/180;
-//               float perpenD = x*cos(radians)+ y*sin(radians);
-//               if(perpenD<=diagonal){
-//                 accumulator[z][(int)perpenD] +=1;
-//                 output.at<float>(z,(int)perpenD) += 1;
-//               }
-//           }
-//         }
-//       }
-//     }
-//     normalize(output, output, 0, 255, NORM_MINMAX);
-//     imwrite("dart4lines.jpg", output);
-// }
-
-
 int ***malloc3dArray(int dim1, int dim2, int dim3)
 {
     int i, j, k;
@@ -292,7 +255,7 @@ void detectAndDisplay( Mat input )
 
   for( int k = 0; k < imgsquares.size(); k++ )
   {
-    rectangle(input, imgsquares[k], Scalar( 255, 0, 0 ), 2);
+    rectangle(input, imgsquares[k], Scalar( 0, 255, 0 ), 2);
   }
   std::cout << imgDetected.size() << std::endl;
 
@@ -309,7 +272,7 @@ void detectAndDisplay( Mat input )
 			float uWidth = unionA.width;
 			float uHeight = unionA.height;
 			float areaRatio = (iWidth * iHeight) / (uWidth * uHeight);
-			if (areaRatio >= 0.3f) {
+			if (areaRatio >= 0.2f) {
         accurateViola.push_back(Rect(dartboards[j].x, dartboards[j].y,dartboards[j].width,dartboards[j].height));
         found = 1;
         break;
@@ -318,16 +281,16 @@ void detectAndDisplay( Mat input )
 		}
     for( int i = 0; i < accurateViola.size(); i++ )
     {
-      rectangle(input, accurateViola[i], Scalar( 0, 255, 0 ), 2);
-      rectangle(input, Point(imgDetected[i].x - (accurateViola[i].width)/2 , imgDetected[i].y - (accurateViola[i].height)/2), Point(imgDetected[i].x + (accurateViola[i].width)/2, imgDetected[i].y + (accurateViola[i].height)/2), Scalar( 0, 0, 255 ), 2);
+      rectangle(input, accurateViola[i], Scalar( 255, 0, 0 ), 2);
+      rectangle(input, Point(imgDetected[i].x - (accurateViola[i].width)/2 , imgDetected[i].y - (accurateViola[i].height)/2), Point(imgDetected[i].x + (accurateViola[i].width)/2, imgDetected[i].y + (accurateViola[i].height)/2), Scalar( 45, 140, 255 ), 2);
     }
     std::cout << accurateViola.size() << std::endl;
-	  imwrite("dart4final.jpg", input);
+	  imwrite("dart12final.jpg", input);
   }
 }
 
 int main() {
-  Mat input = imread("dart4.jpg", 1);
+  Mat input = imread("dart12.jpg", 1);
   if( !cascade.load( cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
   detectAndDisplay(input);
   return 0;
