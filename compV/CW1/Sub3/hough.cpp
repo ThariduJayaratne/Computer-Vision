@@ -220,9 +220,9 @@ void detectAndDisplay( Mat input )
 
   std::vector<Rect> imgDetected = hough(threshold, direction, 90);
 
-	for( int i = 0; i < img10.size();i++)
+	for( int i = 0; i < img8.size();i++)
 	{
-		rectangle(input, Point(img10[i].x, img10[i].y), Point(img10[i].x + img10[i].width, img10[i].y + img10[i].height), Scalar( 0, 0, 255 ), 2);
+		rectangle(input, Point(img8[i].x, img8[i].y), Point(img8[i].x + img8[i].width, img8[i].y + img8[i].height), Scalar( 0, 0, 255 ), 2);
 	}
   std::vector<Rect> dartboards;
   cascade.detectMultiScale( gray_image, dartboards, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500, 500) );
@@ -257,12 +257,12 @@ void detectAndDisplay( Mat input )
   float truePositives = 0;
   float falsePositives = 0;
   float falseNegatives = 0;
-  int size = img10.size();
+  int size = img8.size();
   for (int i = 0; i < accurateViola.size(); i++) {
 		int correct = 0;
-		for (int j = 0; j < img10.size(); j++) {
+		for (int j = 0; j < img8.size(); j++) {
 			Rect r1(accurateViola[i].x, accurateViola[i].y,accurateViola[i].width,accurateViola[i].height);
-			Rect r2(img10[j].x, img10[j].y,img10[j].width,img10[j].height);
+			Rect r2(img8[j].x, img8[j].y,img8[j].width,img8[j].height);
 			Rect intersection = r1 & r2;
 			Rect unionA = r1 | r2;
 			float iWidth = intersection.width;
@@ -274,7 +274,7 @@ void detectAndDisplay( Mat input )
 				correct = 1;
 				truePositives += 1;
 				printf("IOU is %f\n",areaRatio);
-        img10.erase(img10.begin() + j);
+        img8.erase(img8.begin() + j);
 			 }
 		}
 		if (correct == 0) {
@@ -290,11 +290,11 @@ void detectAndDisplay( Mat input )
 	printf("False positives: %f\n", falsePositives);
   printf("False negatives: %f\n", falseNegatives);
 	printf("F1 score is: %f\n", f1score);
-	imwrite("dart10T.jpg", input);
+	// imwrite("dart10T.jpg", input);
 }
 
 int main() {
-  Mat input = imread("dart10.jpg", 1);
+  Mat input = imread("dart8.jpg", 1);
   if( !cascade.load( cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
   detectAndDisplay(input);
   return 0;
