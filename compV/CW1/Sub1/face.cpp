@@ -103,9 +103,9 @@ void detectAndDisplay( Mat frame )
 	}
 	float truePositives = 0;
 
-	for( int i = 0; i < img11.size(); i++ )
+	for( int i = 0; i < img6.size(); i++ )
 	{
-		rectangle(frame, img11[i], Scalar( 0, 0, 255 ), 2);
+		rectangle(frame, img6[i], Scalar( 0, 0, 255 ), 2);
 	}
 
 	float falsePositives = 0;
@@ -113,9 +113,9 @@ void detectAndDisplay( Mat frame )
 
 	for (int i = 0; i < faces.size(); i++) {
 		int correct = 0;
-		for (int j = 0; j < img11.size(); j++) {
+		for (int j = 0; j < img6.size(); j++) {
 			Rect r1(faces[i].x, faces[i].y,faces[i].width,faces[i].height);
-			Rect r2(img11[j].x, img11[j].y,img11[j].width,img11[j].height);
+			Rect r2(img6[j].x, img6[j].y,img6[j].width,img6[j].height);
 			Rect intersection = r1 & r2;
 			Rect unionA = r1 | r2;
 			float iWidth = intersection.width;
@@ -132,7 +132,7 @@ void detectAndDisplay( Mat frame )
 		if (correct == 0) {
 			falsePositives++;
 		}
-	  falseNegatives = img11.size()-truePositives;
+	  falseNegatives = img6.size()-truePositives;
 	}
 	// float tpr = truePositives/faces.size();
 	float recall = truePositives/(truePositives+falseNegatives);
@@ -146,6 +146,6 @@ void detectAndDisplay( Mat frame )
 	printf("False negatives: %f\n", falseNegatives);
 	printf("F1 score is: %f\n", f1score);
 
-	imwrite("dart11T.jpg", frame);
+	imwrite("dart6T.jpg", frame);
 
 }

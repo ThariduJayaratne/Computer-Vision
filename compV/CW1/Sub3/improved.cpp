@@ -397,8 +397,8 @@ void detectAndDisplay(Mat input) {
   imwrite("detected.jpg", input);
 }
 
-int main() {
-  Mat input = imread("dart14.jpg", 1);
+int main( int argc, const char** argv ) {
+  Mat input = imread(argv[1], CV_LOAD_IMAGE_COLOR);
   if( !cascade.load( cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
   detectAndDisplay(input);
   return 0;
